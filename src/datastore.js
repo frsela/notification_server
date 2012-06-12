@@ -5,10 +5,13 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-function datastore() {
-  console.log("Hash table based data store loaded.");
+var redis = require("redis");
+var server_info = require("./config.js").server_info;
 
-  this.appsTable = {};
+function datastore() {
+  console.log("REDIS based data store loaded.");
+
+  this.redis = redis.createClient();
   this.nodesTable = {};
 }
 
@@ -24,12 +27,16 @@ datastore.prototype = {
 
     // Register a new node
     this.nodesTable[token] = connector;
+
+    // Register in REDIS that this server manages this node
+    this.redis.set("node_" + token, server_info.key);
   },
 
   /**
    * Gets a node connector
    */
   getNode: function (token) {
+    console.log("Server: " + this.redis.get("node_" + token));
     if(this.nodesTable[token]) {
       return this.nodesTable[token];
     }
@@ -41,25 +48,33 @@ datastore.prototype = {
    * Register a new application
    */
   registerApplication: function (appToken, nodeToken) {
-    var nodes = [nodeToken];
-    // If exists, we only shall add the node to the nodes list if it's not registered before
-    if ( this.appsTable[appToken] && (this.appsTable[appToken].indexOf(nodeToken) == -1) ) {
-      nodes = nodes.concat(this.appsTable[appToken]);
-    }
-    this.appsTable[appToken] = nodes;
+    this.redis.sadd("app_" + appToken, nodeToken);
   },
 
   /**
    * Gets an application node list
    */
   getApplication: function (token) {
+    this.redis.smembers("app_" + token, function(err, replies) {
+        console.log(replies.length + " replies:");
+        replies.forEach(function (reply, i) {
+            console.log("    " + i + ": " + reply);
+        });
+    });
+/*
     if(this.appsTable[token]) {
       return this.appsTable[token];
     }
     return false;    
   }
+*/
+    return false;
+  }
 }
 
+///////////////////////////////////////////
+// Singleton
+///////////////////////////////////////////
 var ds = new datastore();
 function getDataStore() {
   return ds;
