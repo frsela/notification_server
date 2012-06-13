@@ -34,7 +34,7 @@ function datastore() {
     if(err == null) {
       console.log("Connected to MongoDB !");
     } else {
-      console.log("Error connecting to MongoDB !");
+      console.log("Error connecting to MongoDB ! - " + err);
       // TODO: Cierre del servidor? Modo alternativo?
     }
   });
@@ -58,11 +58,14 @@ datastore.prototype = {
 
     // Register in MONGO that this server manages this node
     this.db.collection("nodes", function(err, collection) {
-      collection.insert( { 'token': token, 'serverId': server_info.id }, function(err,d) {
+      collection.update( { 'token': token },
+                         { 'token': token, 'serverId': server_info.id },
+                         { upsert: true },
+                         function(err,d) {
         if(err != null)
-          console.log("Node inserted into MongoDB");
+          console.log("Node inserted/update into MongoDB");
         else
-          console.log("Error inserting node into MongoDB");
+          console.log("Error inserting/updating node into MongoDB");
       });
     });
   },
@@ -87,11 +90,14 @@ datastore.prototype = {
 
     // Store in MongoDB
     this.db.collection("apps", function(err, collection) {
-      collection.insert( { 'token': appToken, 'node': nodeToken }, function(err,d) {
-        if(err != null)
+      collection.update( {'token': appToken},
+                         {$push : { 'node': nodeToken }},
+                         {upsert: true},
+                         function(err,d) {
+        if(err == null)
           console.log("Application inserted into MongoDB");
         else
-          console.log("Error inserting application into MongoDB");
+          console.log("Error inserting application into MongoDB: " + err);
       });
     });
 
@@ -105,7 +111,14 @@ datastore.prototype = {
     this.redis.smembers("app_" + token, cbfunc);
 
     // Get from MongoDB
-    // TODO
+    this.db.collection("apps", function(err, collection) {
+      collection.find( { 'token': token } ).toArray(function(err,d) {
+        if(err == null)
+          console.log(d);
+        else
+          console.log("Error finding application into MongoDB: " + err);
+      });
+    });
   }
 }
 
