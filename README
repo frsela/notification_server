@@ -68,9 +68,11 @@ Requirements / Dependencies
 
 * Node.JS
 * Redis
+* MongoDB
 
 Node.JS Modules (npm install <module>)
 
 * node-uuid
 * websocket
 * redis
+* mongodb
