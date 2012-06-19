@@ -74,5 +74,4 @@ Node.JS Modules (npm install <module>)
 
 * node-uuid
 * websocket
-* redis
 * mongodb

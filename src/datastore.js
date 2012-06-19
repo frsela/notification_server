@@ -5,18 +5,14 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var redis = require("redis");
 var mongodb = require("mongodb");
 var server_info = require("./config.js").server_info;
 
 function datastore() {
-  console.log("MONGO/REDIS based data store loaded.");
+  console.log("MONGO based data store loaded.");
 
   // In-Memory storage
   this.nodesTable = {};
-
-  // Connection to REDIS
-  this.redis = redis.createClient();
 
   // Connection to MongoDB
   this.db = new mongodb.Db(
@@ -53,9 +49,6 @@ datastore.prototype = {
     // Register a new node
     this.nodesTable[token] = connector;
 
-    // Register in REDIS that this server manages this node
-    this.redis.set("node_" + token, server_info.id);
-
     // Register in MONGO that this server manages this node
     this.db.collection("nodes", function(err, collection) {
       collection.update( { 'token': token },
@@ -85,9 +78,6 @@ datastore.prototype = {
    * Register a new application
    */
   registerApplication: function (appToken, nodeToken) {
-    // Store in REDIS
-    this.redis.sadd("app_" + appToken, nodeToken);
-
     // Store in MongoDB
     this.db.collection("apps", function(err, collection) {
       collection.update( {'token': appToken},
@@ -107,9 +97,6 @@ datastore.prototype = {
    * Gets an application node list
    */
   getApplication: function (token, cbfunc) {
-    // Get from REDIS
-    this.redis.smembers("app_" + token, cbfunc);
-
     // Get from MongoDB
     this.db.collection("apps", function(err, collection) {
       collection.find( { 'token': token } ).toArray(function(err,d) {
