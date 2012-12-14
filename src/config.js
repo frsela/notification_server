@@ -137,7 +137,7 @@ exports.NS_AS = {
     {
       ip: "0.0.0.0",
       port: 8081,
-      ssl: true
+      ssl: false
     }
   ]
 };
@@ -162,7 +162,7 @@ exports.NS_UA_WS = {
     {
       ip: "0.0.0.0",
       port: 8080,
-      ssl: true
+      ssl: false
     }
   ],
 
