@@ -36,17 +36,21 @@ var DataStore = function() {
     events.EventEmitter.call(this);
 
     if (ddbbsettings.replicasetName) {
+      log.debug("Con replicaset");
       //Filling the replicaset data
       var servers = [];
       ddbbsettings.machines.forEach(function(machine) {
         servers.push(new mongodb.Server(machine[0], machine[1], {
           auto_reconnect: true,
           socketOptions: {
-            keepalive: ddbbsettings.keepalive
+            keepalive: ddbbsettings.keepalive,
+            connectTimeoutMS: 1000,
+            socketTimeoutMS: 2000
           }
         }));
       });
-      var replSet = new mongodb.ReplSetServers(servers,
+      // https://github.com/mongodb/node-mongodb-native/blob/1.3-dev/lib/mongodb/connection/repl_set.js#L1498
+      var replSet = new mongodb.ReplSet(servers,
         {
           rs_name: ddbbsettings.replicasetName,
           read_secondary: true,
@@ -63,6 +67,7 @@ var DataStore = function() {
         fsync: true
       });
     } else {
+      log.debug("Sin replicaset");
       this.db = new mongodb.Db(
         ddbbsettings.ddbbname,
         new mongodb.Server(
@@ -71,14 +76,38 @@ var DataStore = function() {
           {
             auto_reconnect: true,
             socketOptions: {
-              keepalive: ddbbsettings.keepalive
+              keepalive: ddbbsettings.keepalive,
+              connectTimeoutMS: 1000,
+              socketTimeoutMS: 2000
+            },
+            logger: {
+              error: function(m,o) {
+                console.log("MongoError " + m + " # " + JSON.stringify(o));
+              },
+              Log: function(m,o) {
+                console.log("MongoLog " + m + " # " + JSON.stringify(o));
+              },
+              debug: function(m,o) {
+                console.log("MongoDebug " + m + " # " + JSON.stringify(o));
+              }
             }
           }
         ),
         {
           w: 1,
           journal: true,
-          fsync: true
+          fsync: true,
+          logger: {
+            error: function(m,o) {
+              console.log("MongoDbError " + m + " # " + JSON.stringify(o));
+            },
+            Log: function(m,o) {
+              console.log("MongoDbLog " + m + " # " + JSON.stringify(o));
+            },
+            debug: function(m,o) {
+              console.log("MongoDbDebug " + m + " # " + JSON.stringify(o));
+            }
+          }
         }
       );
     }
