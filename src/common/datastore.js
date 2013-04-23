@@ -58,7 +58,9 @@ var DataStore = function() {
 
       // Connection to MongoDB
       this.db = new mongodb.Db(ddbbsettings.ddbbname, replSet, {
-        w: 1
+        w: 1,
+        journal: true,
+        fsync: true
       });
     } else {
       this.db = new mongodb.Db(
@@ -74,7 +76,9 @@ var DataStore = function() {
           }
         ),
         {
-          w: 1
+          w: 1,
+          journal: true,
+          fsync: true
         }
       );
     }
