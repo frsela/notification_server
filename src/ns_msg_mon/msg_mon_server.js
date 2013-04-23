@@ -37,11 +37,18 @@ monitor.prototype = {
                             onNewMessage(msg);
                           }
       );
+
+      if (msgBroker.interval) {
+        //clearInterval(msgBroker.interval);
+      }
     });
 
     msgBroker.on('brokerdisconnected', function() {
       self.ready = false;
-      log.critical('ns_msg_monitor::init --> Broker DISCONNECTED!!');
+//      log.critical('ns_msg_monitor::init --> Broker DISCONNECTED!!');
+      msgBroker.interval = setTimeout(function () {
+        msgBroker.init()
+      }, 10000);
     });
 
     // Connect to the message broker
