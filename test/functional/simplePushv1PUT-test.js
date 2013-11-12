@@ -29,7 +29,7 @@ function sendNotification(url, id, callback) {
 // TESTS //
 vows.describe('SimplePush v1 PUT tests').addBatch({
   'Valid URLs to PUT': {
-    'Send a /foo/bar':{
+    'Send a /foo/bar': {
       topic: function() {
         sendNotification('https://localhost:8081/foo/bar', 'version=1', this.callback);
       },

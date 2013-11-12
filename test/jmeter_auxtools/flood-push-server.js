@@ -1,14 +1,14 @@
 /* jshint node: true */
-"use strict";
+'use strict';
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 var https = require('https');
 var url = require('url');
 
 var debug = function(message) {
   console.log((new Date().toLocaleString()) + ' - ' + message);
-}
+};
 
 var sendRegister = function(connection) {
   connection.sendUTF('{"channelID":"1234","messageType":"register"}');
@@ -27,7 +27,7 @@ var sendNotification = function(where, version) {
     debug('notification sent to ' + where + ' version=' + version + ' - ' + res.statusCode);
   });
 
-  req.on('error', function(){});
+  req.on('error', function() {});
 
   req.write('version=' + version);
   req.end();
@@ -48,11 +48,11 @@ if (process.argv[8] < 5000) {
   process.exit(1);
 }
 
-for (var i = 2; i<process.argv.length; i++) {
+for (var i = 2; i < process.argv.length; i++) {
   ARGS.push(process.argv[i]);
 }
 
-var WSADRESS = 'wss://'+ARGS[0]+':'+ARGS[1]+'/',
+var WSADRESS = 'wss://' + ARGS[0] + ':' + ARGS[1] + '/',
     PROTOCOL = 'push-notification';
 
 var poolConnections = [];
@@ -70,7 +70,7 @@ var newConnection = function newConnection() {
     debug('Connect Error: ' + error.toString());
   });
   conn.on('connect', function(connection) {
-    var version = Math.floor(Math.random()*100000);
+    var version = Math.floor(Math.random() * 100000);
     var identifier = id++;
     debug('connected on' + identifier);
 
@@ -81,7 +81,7 @@ var newConnection = function newConnection() {
 
     connection.on('error', function(error) {
       closed[identifier] = true;
-      debug("Connection Error on" + identifier + " -- " + error.toString());
+      debug('Connection Error on' + identifier + ' -- ' + error.toString());
     });
     connection.on('close', function() {
       closed[identifier] = true;
@@ -131,7 +131,7 @@ setTimeout(function stopInitial() {
   console.log('Stopping getting new connections.');
   console.log('We started ' + total + ', hoping to open ' + ARGS[2]);
   clearInterval(getter);
-}, ARGS[6]-140000);
+}, ARGS[6] - 140000);
 
 setTimeout(function checkAliveConnections() {
   INTERVALS.forEach(function(elem) {
@@ -142,14 +142,14 @@ setTimeout(function checkAliveConnections() {
   console.log('poolMessages.keys.length=' + Object.keys(poolMessages).length);
   poolConnections.forEach(function(conn) {
     if (conn && conn.connected) {
-      debug('sending ping to ' + conn.identifier)
+      debug('sending ping to ' + conn.identifier);
       conn.sendUTF('{}');
     }
   });
-}, ARGS[6]-120000);
+}, ARGS[6] - 120000);
 
 setTimeout(function killItWithFire() {
-  console.log('There are ' + Object.keys(poolPong).length +  ' connections alive, and we started ' + total +
+  console.log('There are ' + Object.keys(poolPong).length + ' connections alive, and we started ' + total +
     ', with ' + id + ' really opened');
   process.exit();
 }, ARGS[6]);

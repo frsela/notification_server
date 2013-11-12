@@ -29,8 +29,8 @@ function verifytokens() {
 }
 
 function setCharAt(str,index,chr) {
-  if(index > str.length-1) return str;
-  return str.substr(0,index) + chr + str.substr(index+1);
+  if (index > str.length - 1) return str;
+  return str.substr(0, index) + chr + str.substr(index + 1);
 }
 
 var tokensModified = [];
@@ -41,12 +41,12 @@ var tokensModified = [];
   var TokenitoAfter = '';
   for (var i = Tokenito.length; i > 0; i--) {
     Tokenito = Token.get();
-    length = Tokenito.length-1;
+    length = Tokenito.length - 1;
     TokenitoAfter = Tokenito;
     TokenitoAfter = setCharAt(Tokenito,
-                              Tokenito.length-i,
-                              String.fromCharCode(Tokenito.charCodeAt(length-1) +
-                                                  Math.floor(Math.random()*11)));
+                              Tokenito.length - i,
+                              String.fromCharCode(Tokenito.charCodeAt(length - 1) +
+                                                  Math.floor(Math.random() * 11)));
     tokensModified.push(TokenitoAfter);
   }
   return tokensModified;

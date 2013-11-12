@@ -17,12 +17,12 @@ var mongodb = require('mongodb'),
   Helpers = require('./Helpers.js'),
   connectionstate = require('../common/constants.js').connectionstate;
 
-var DataStore = function () {
+var DataStore = function() {
   this.db = null;
   var self = this;
   events.EventEmitter.call(this);
 
-  this.callbackReady = function (callback) {
+  this.callbackReady = function(callback) {
     if (this.ready) {
       callback(true);
       return;
@@ -31,15 +31,15 @@ var DataStore = function () {
       this.callbacks = [];
     }
     this.callbacks.push(Helpers.checkCallback(callback));
-  },
+  };,
 
-  this.start = function () {
+  this.start = function() {
     Log.info('datastore::init --> MongoDB data store loading.');
 
-    var mongourl = (function () {
+    var mongourl = (function() {
       var url = 'mongodb://';
       url += (ddbbsettings.machines).map(
-        function (e) {
+        function(e) {
           return e[0] + ':' + e[1];
         }
       ).toString();
@@ -67,7 +67,7 @@ var DataStore = function () {
       }
     };
 
-    mongodb.MongoClient.connect(mongourl, options, function (err, db) {
+    mongodb.MongoClient.connect(mongourl, options, function(err, db) {
       if (err) {
         Log.critical(Log.messages.CRITICAL_DBCONNECTIONERROR, {
           'class': 'datastore',
@@ -85,8 +85,8 @@ var DataStore = function () {
        * FIXME: Check https://jirapdi.tid.es/browse/OWD-30308 for more info
        */
       var events = ['close']; //, 'error'];
-      events.forEach(function (e) {
-        db.on(e, function () {
+      events.forEach(function(e) {
+        db.on(e, function() {
           self.emit('closed');
         });
       });
@@ -94,23 +94,23 @@ var DataStore = function () {
       self.emit('ready');
       self.ready = true;
       var callbacks = self.callbacks || [];
-      callbacks.forEach(function (elem) {
+      callbacks.forEach(function(elem) {
         elem(true);
       });
     });
-  },
+  };,
 
-  this.stop = function () {
+  this.stop = function() {
     Log.info('datastore::close --> Closing connection to DB');
     if (this.db && this.db.close) {
       this.db.close();
     }
     this.emit('closed');
     this.ready = false;
-  },
+  };,
 
-  this.registerNode = function (uaid, serverId, data, callback) {
-    this.db.collection('nodes', function (err, collection) {
+  this.registerNode = function(uaid, serverId, data, callback) {
+    this.db.collection('nodes', function(err, collection) {
       callback = Helpers.checkCallback(callback);
       if (err) {
         Log.error(Log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
@@ -122,7 +122,7 @@ var DataStore = function () {
       }
       //We could use a $setOnInsert (only available on MongoDB 2.4)
       //http://docs.mongodb.org/manual/reference/operator/setOnInsert/#op._S_setOnInsert
-      self.getNodeData(uaid, function (error, d) {
+      self.getNodeData(uaid, function(error, d) {
         if (error) {
           callback(error);
           return;
@@ -141,7 +141,7 @@ var DataStore = function () {
             }
           },
           { safe: true, upsert: true },
-          function (err, res) {
+          function(err, res) {
             if (err) {
               Log.error(Log.messages.ERROR_DSERRORINSERTINGNODEINDB, {
                 'error': err
@@ -155,10 +155,10 @@ var DataStore = function () {
         );
       });
     });
-  },
+  };,
 
-  this.unregisterNode = function (uaid, queue, fullyDisconnected, callback) {
-    this.db.collection('nodes', function (err, collection) {
+  this.unregisterNode = function(uaid, queue, fullyDisconnected, callback) {
+    this.db.collection('nodes', function(err, collection) {
       callback = Helpers.checkCallback(callback);
       if (err) {
         Log.error(Log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
@@ -181,7 +181,7 @@ var DataStore = function () {
           }
         },
         { safe: true },
-        function (err, data) {
+        function(err, data) {
           if (err) {
             Log.error(Log.messages.ERROR_DSERRORREMOVINGNODE, {
               'error': err
@@ -193,12 +193,12 @@ var DataStore = function () {
         }
       );
     });
-  },
+  };,
 
-  this.getNodeData = function (uaid, callback) {
+  this.getNodeData = function(uaid, callback) {
     Log.debug('datastore::getNodeData --> Finding info for node ' + uaid);
     // Get from MongoDB
-    this.db.collection('nodes', function (err, collection) {
+    this.db.collection('nodes', function(err, collection) {
       callback = Helpers.checkCallback(callback);
       if (err) {
         Log.error(Log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
@@ -208,7 +208,7 @@ var DataStore = function () {
         callback(err);
         return;
       }
-      collection.findOne({ _id: uaid }, function (err, data) {
+      collection.findOne({ _id: uaid }, function(err, data) {
         if (err) {
           Log.error(Log.messages.ERROR_DSERRORFINDINGNODE, {
             'error': err
@@ -221,14 +221,14 @@ var DataStore = function () {
         callback(null, data);
       });
     });
-  },
+  };,
 
 /**
  * Register a new application
  */
-  this.registerApplication = function (appToken, channelID, uaid, cert, callback) {
+  this.registerApplication = function(appToken, channelID, uaid, cert, callback) {
     // Store in MongoDB
-    this.db.collection('apps', function (err, collection) {
+    this.db.collection('apps', function(err, collection) {
       if (!err) {
         collection.findAndModify(
           { _id: appToken },
@@ -242,7 +242,7 @@ var DataStore = function () {
             }
           },
           { safe: true, upsert: true },
-          function (err) {
+          function(err) {
             if (err) {
               Log.error(Log.messages.ERROR_DSERRORINSERTINGAPPINDB, {
                 'error': err
@@ -258,7 +258,7 @@ var DataStore = function () {
         });
       }
     });
-    this.db.collection('nodes', function (err, collection) {
+    this.db.collection('nodes', function(err, collection) {
       callback = Helpers.checkCallback(callback);
       if (err) {
         Log.error(Log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
@@ -278,12 +278,12 @@ var DataStore = function () {
               app: appToken
             }
           },
-          $set : {
+          $set: {
             lt: new Date()
           }
         },
         { safe: true, upsert: true },
-        function (err, data) {
+        function(err, data) {
           if (err) {
             Log.error(Log.messages.ERROR_DSERRORINSERTINGMSGTONODE, {
               'method': 'registerApplication',
@@ -297,15 +297,15 @@ var DataStore = function () {
         }
       );
     });
-  },
+  };,
 
 /**
  * Unregister an old application
  */
-  this.unregisterApplication = function (appToken, uaid, callback) {
+  this.unregisterApplication = function(appToken, uaid, callback) {
     // Remove from MongoDB
     callback = Helpers.checkCallback(callback);
-    this.db.collection('apps', function (err, collection) {
+    this.db.collection('apps', function(err, collection) {
       if (err) {
         Log.error(Log.messages.ERROR_DSERROROPENINGAPPSCOLLECTION, {
           'method': 'unregisterApplication',
@@ -321,7 +321,7 @@ var DataStore = function () {
         }
         },
         { safe: true },
-        function (err, data) {
+        function(err, data) {
           if (err) {
             Log.error(Log.messages.ERROR_DSUNDETERMINEDERROR, {
               'error': err
@@ -339,7 +339,7 @@ var DataStore = function () {
       );
     });
 
-    this.db.collection('nodes', function (err, collection) {
+    this.db.collection('nodes', function(err, collection) {
       if (err) {
         Log.error(Log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
           'method': 'unregisterApplication',
@@ -364,7 +364,7 @@ var DataStore = function () {
           }
         },
         {},
-        function (err, data) {
+        function(err, data) {
           if (err) {
             Log.debug('datastore::unregisterApplication --> Error removing apptoken from the nodes: ' + err);
             return callback(err);
@@ -377,10 +377,10 @@ var DataStore = function () {
 
     //Remove the appToken if the nodelist (no) is empty
     this.removeApplicationIfEmpty(appToken);
-  },
+  };,
 
-  this.removeApplicationIfEmpty = function (appToken) {
-    this.db.collection('apps', function (err, collection) {
+  this.removeApplicationIfEmpty = function(appToken) {
+    this.db.collection('apps', function(err, collection) {
       if (err) {
         Log.error(Log.messages.ERROR_DSERROROPENINGAPPSCOLLECTION, {
           'method': 'removeApplicationIfEmpty',
@@ -399,19 +399,19 @@ var DataStore = function () {
           safe: false,
           remove: true //Remove document
         },
-        function (err) {
+        function(err) {
           if (err) {
             Log.debug('datastore::removeApplicationIfEmpty --> Error removing application from apps: ' + err);
           }
         }
       );
     });
-  },
+  };,
 
-  this.getApplicationsForUA = function (uaid, callback) {
+  this.getApplicationsForUA = function(uaid, callback) {
     // Get from MongoDB
     Log.debug('datastore::getApplicationsOnUA --> Going to find applications in UA: ' + uaid);
-    this.db.collection('nodes', function (err, collection) {
+    this.db.collection('nodes', function(err, collection) {
       callback = Helpers.checkCallback(callback);
       if (err) {
         Log.error(Log.messages.ERROR_DSERROROPENINGAPPSCOLLECTION, {
@@ -423,7 +423,7 @@ var DataStore = function () {
       collection.findOne(
         { _id: uaid },
         { _id: false, ch: true },
-        function (err, data) {
+        function(err, data) {
           if (err) {
             Log.error(Log.messages.ERROR_DSERRORFINDINGAPPS, {
               'error': err
@@ -441,14 +441,14 @@ var DataStore = function () {
         }
       );
     });
-  },
+  };,
 
 /**
  * Gets an application node list
  */
-  this.getApplication = function (appToken, callback, json) {
+  this.getApplication = function(appToken, callback, json) {
     Log.debug('datastore::getApplication --> Going to find application with appToken: ' + appToken);
-    this.db.collection('apps', function (err, apps) {
+    this.db.collection('apps', function(err, apps) {
       if (err) {
         Log.error(Log.messages.ERROR_DSERROROPENINGAPPSCOLLECTION, {
           'method': 'getApplication',
@@ -460,7 +460,7 @@ var DataStore = function () {
       apps.findOne(
         { _id: appToken },
         { _id: false, no: true },
-        function (err, data) {
+        function(err, data) {
           if (err) {
             Log.error(Log.messages.ERROR_DSERRORFINDINGAPP, {
               'error': err
@@ -476,7 +476,7 @@ var DataStore = function () {
             Log.error('Not enough data or invalid: ', data);
             return;
           }
-          self.db.collection('nodes', function (err, nodes) {
+          self.db.collection('nodes', function(err, nodes) {
             if (err) {
               Log.error(Log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
                 'method': 'newVersion',
@@ -493,7 +493,7 @@ var DataStore = function () {
                 si: true,
                 dt: true
               },
-              function (err, data) {
+              function(err, data) {
                 if (err) {
                   Log.error(Log.messages.ERROR_DSERRORFINDINGNODE, {
                     'error': err
@@ -512,12 +512,12 @@ var DataStore = function () {
         }
       );
     });
-  },
+  };,
 
-  this.getInfoForAppToken = function (apptoken, callback) {
+  this.getInfoForAppToken = function(apptoken, callback) {
     apptoken = apptoken.toString();
     Log.debug('datastore::getInfoForAppToken --> Going to find the info for the appToken ' + apptoken);
-    this.db.collection('apps', function (err, collection) {
+    this.db.collection('apps', function(err, collection) {
       callback = Helpers.checkCallback(callback);
       if (err) {
         Log.error(Log.messages.ERROR_DSERROROPENINGAPPSCOLLECTION, {
@@ -527,7 +527,7 @@ var DataStore = function () {
         callback(err);
         return;
       }
-      collection.findOne({ _id: apptoken }, function (err, data) {
+      collection.findOne({ _id: apptoken }, function(err, data) {
         if (err) {
           Log.error(Log.messages.ERROR_DSERRORFINDINGCERTIFICATE, {
             'method': 'getInfoForAppToken',
@@ -544,19 +544,19 @@ var DataStore = function () {
         callback(null, data);
       });
     });
-  },
+  };,
 
 /**
  * Save a new message
  * @return New message as stored on DB.
  */
-  this.newVersion = function (nodeId, appToken, channelID, version) {
+  this.newVersion = function(nodeId, appToken, channelID, version) {
     var msg = {};
     msg.app = appToken;
     msg.ch = channelID;
     msg.vs = version;
 
-    this.db.collection('nodes', function (err, collection) {
+    this.db.collection('nodes', function(err, collection) {
       if (err) {
         Log.error(Log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
           'method': 'newVersion',
@@ -577,7 +577,7 @@ var DataStore = function () {
           }
         },
         {},
-        function (error) {
+        function(error) {
           if (error) {
             Log.error(Log.messages.ERROR_DSERRORSETTINGNEWVERSION, {
               'apptoken': appToken,
@@ -590,15 +590,15 @@ var DataStore = function () {
       );
     });
     return msg;
-  },
+  };,
 
 /**
  * This ACKs a message by putting a 'new' flag to 0 on the node, on the channelID ACKed
  *
  */
-  this.ackMessage = function (uaid, channelID, version) {
+  this.ackMessage = function(uaid, channelID, version) {
     Log.debug('dataStore::ackMessage --> Going to ACK message from uaid=' + uaid + ' for channelID=' + channelID + ' and version=' + version);
-    this.db.collection('nodes', function (error, collection) {
+    this.db.collection('nodes', function(error, collection) {
       if (error) {
         Log.error(Log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
           'method': 'ackMessage',
@@ -619,7 +619,7 @@ var DataStore = function () {
           }
         },
         {},
-        function (err) {
+        function(err) {
           if (err) {
             Log.error(Log.messages.ERROR_DSERRORACKMSGINDB, {
               'error': err
@@ -628,16 +628,16 @@ var DataStore = function () {
         }
       );
     });
-  },
+  };,
 
 /**
  * Recovers an operator from the dataStore
  */
-  this.getOperator = function (mcc, mnc, callback) {
+  this.getOperator = function(mcc, mnc, callback) {
     var id = Helpers.padNumber(mcc, 3) + '-' + Helpers.padNumber(mnc, 3);
     Log.debug('datastore::getOperator --> Looking for operator ' + id);
     // Get from MongoDB
-    this.db.collection('operators', function (err, collection) {
+    this.db.collection('operators', function(err, collection) {
       callback = Helpers.checkCallback(callback);
       if (err) {
         Log.error(Log.messages.ERROR_DSERROROPENINGOPERATORSCOLLECTION, {
@@ -647,7 +647,7 @@ var DataStore = function () {
         callback(err);
         return;
       }
-      collection.findOne({ '_id': id }, function (err, data) {
+      collection.findOne({ '_id': id }, function(err, data) {
         if (err) {
           Log.debug('datastore::getOperator --> Error finding operator from MongoDB: ' + err);
           callback(err);
@@ -658,13 +658,13 @@ var DataStore = function () {
         callback(null, data);
       });
     });
-  },
+  };,
 
-  this.getOperatorsWithLocalNodes = function (callback) {
+  this.getOperatorsWithLocalNodes = function(callback) {
     callback = Helpers.checkCallback(callback);
     Log.debug('datastore::getOperatorsWithLocalNodes --> Looking for operators with a wakeup local node');
     // Get from MongoDB
-    this.db.collection('operators', function (err, collection) {
+    this.db.collection('operators', function(err, collection) {
       if (err) {
         Log.error(Log.messages.ERROR_DSERROROPENINGOPERATORSCOLLECTION, {
           'method': 'getOperatorsWithLocalNodes',
@@ -673,7 +673,7 @@ var DataStore = function () {
         callback(err);
         return;
       }
-      collection.find({ 'wakeup': { $ne: null } }).toArray(function (err, data) {
+      collection.find({ 'wakeup': { $ne: null } }).toArray(function(err, data) {
         if (err) {
           Log.debug('datastore::getOperatorsWithLocalNodes --> Error finding operators from MongoDB: ' + err);
           callback(err);
@@ -684,13 +684,13 @@ var DataStore = function () {
         callback(null, data);
       });
     });
-  },
+  };,
 
-  this.changeLocalServerStatus = function (index, online, callback) {
+  this.changeLocalServerStatus = function(index, online, callback) {
     callback = Helpers.checkCallback(callback);
     Log.debug('datastore::changeLocalServerStatus --> Changing status of a wakeup local server: ', index);
     // Get from MongoDB
-    this.db.collection('operators', function (err, collection) {
+    this.db.collection('operators', function(err, collection) {
       if (err) {
         Log.error(Log.messages.ERROR_DSERROROPENINGOPERATORSCOLLECTION, {
           'method': 'changeLocalServerStatus',
@@ -722,7 +722,7 @@ var DataStore = function () {
         [],
         op,
         { safe: true, upsert: true },
-        function (err, res) {
+        function(err, res) {
           if (err) {
             Log.error(Log.messages.ERROR_DSERRORINSERTINGNODEINDB, {
               'error': err
@@ -733,12 +733,12 @@ var DataStore = function () {
           Log.debug('dataStore::changeLocalServerStatus --> Local server updated ', res);
         });
     });
-  },
+  };,
 
-  this.getUDPClientsAndUnACKedMessages = function (callback) {
+  this.getUDPClientsAndUnACKedMessages = function(callback) {
     callback = Helpers.checkCallback(callback);
     Log.debug('Getting UDP clients with unACKed messages');
-    this.db.collection('nodes', function (err, collection) {
+    this.db.collection('nodes', function(err, collection) {
       if (err) {
         Log.error(Log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
           'method': 'getUDPClientsAndUnACKedMessages',
@@ -761,7 +761,7 @@ var DataStore = function () {
           si: true,
           dt: true
         }
-      ).toArray(function (err, nodes) {
+      ).toArray(function(err, nodes) {
           if (err) {
             Log.error(Log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
               'method': 'getUDPClientsAndUnACKedMessages',
@@ -778,10 +778,10 @@ var DataStore = function () {
           callback(null, nodes);
         });
     });
-  },
+  };,
 
-  this.flushDb = function () {
-    this.db.collection('apps', function (err, collection) {
+  this.flushDb = function() {
+    this.db.collection('apps', function(err, collection) {
       if (err) {
         Log.error(Log.messages.ERROR_DSERROROPENINGAPPSCOLLECTION, {
           'method': 'flushDb',
@@ -789,7 +789,7 @@ var DataStore = function () {
         });
         return;
       }
-      collection.remove({}, function (err) {
+      collection.remove({}, function(err) {
         if (err) {
           Log.error(Log.messages.ERROR_DSERRORREMOVINGXXXCOLLECTION, {
             'collection': 'apps',
@@ -798,7 +798,7 @@ var DataStore = function () {
         }
       });
     });
-    this.db.collection('nodes', function (err, collection) {
+    this.db.collection('nodes', function(err, collection) {
       if (err) {
         Log.error(Log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
           'method': 'flushDb',
@@ -806,7 +806,7 @@ var DataStore = function () {
         });
         return;
       }
-      collection.remove({}, function (err) {
+      collection.remove({}, function(err) {
         if (err) {
           Log.error(Log.messages.ERROR_DSERRORREMOVINGXXXCOLLECTION, {
             'collection': 'nodes',
@@ -815,7 +815,7 @@ var DataStore = function () {
         }
       });
     });
-    this.db.collection('operators', function (err, collection) {
+    this.db.collection('operators', function(err, collection) {
       if (err) {
         Log.error(Log.messages.ERROR_DSERROROPENINGOPERATORSCOLLECTION, {
           'method': 'flushDb',
@@ -823,7 +823,7 @@ var DataStore = function () {
         });
         return;
       }
-      collection.remove({}, function (err) {
+      collection.remove({}, function(err) {
         if (err) {
           Log.error(Log.messages.ERROR_DSERRORREMOVINGXXXCOLLECTION, {
             'collection': 'operators',

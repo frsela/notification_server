@@ -75,7 +75,7 @@ MobileNetwork.prototype = {
     var self = this;
     DataStore.getOperator(mcc, mnc, function(error, d) {
       if (error) {
-        Log.error(Log.messages.ERROR_MOBILENETWORKERROR,{
+        Log.error(Log.messages.ERROR_MOBILENETWORKERROR, {
           'error': error
         });
         callback(error);
@@ -98,7 +98,7 @@ MobileNetwork.prototype = {
   },
 
   changeNetworkStatus: function(mcc, mnc, online) {
-    var index = this.getIndex(mcc,mnc);
+    var index = this.getIndex(mcc, mnc);
     Log.debug('MobileNetwork::changeNetworkStatus --> ' + index + ' is ' + online);
     DataStore.changeLocalServerStatus(index, online);
   }

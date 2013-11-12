@@ -1,13 +1,13 @@
 var WebSocketServer = require('websocket').server;
 var http = require('http');
 
-http.createServer(onHTTPMessage).listen(8888, "0.0.0.0");
+http.createServer(onHTTPMessage).listen(8888, '0.0.0.0');
 console.log('post-to-websocket --> Listening on 0.0.0.0:8888');
 
 function onHTTPMessage(req, res) {
   console.log('post-to-websocket --> Received request for ' + req.url);
-  if(req.url == "/websocket") {
-    console.log("Petition accepted in /websocket");
+  if (req.url == '/websocket') {
+    console.log('Petition accepted in /websocket');
     if (req.method == 'POST') {
       var fullBody = '';
       req.on('data', function(chunk) {
@@ -17,12 +17,12 @@ function onHTTPMessage(req, res) {
         var idTest = null;
         try {
           idTest = JSON.parse(fullBody).idTest || JSON.parse(fullBody).data.idTest;
-        } catch(e) {
+        } catch (e) {
           console.log('no se puede parsear la petición');
           return res.end('no se puede parsear la petición');
         }
         websocket(idTest, fullBody, function(salida) {
-          console.log("salida para post --> " + salida);
+          console.log('salida para post --> ' + salida);
           this.writeHead(200, {'Content-Type': 'text/plain', 'access-control-allow-origin': '*'});
           return this.end(salida);
         }.bind(res));
@@ -30,12 +30,12 @@ function onHTTPMessage(req, res) {
       });
     } else {
       res.writeHead(200, {'Content-Type': 'text/plain', 'access-control-allow-origin': '*'});
-      res.write("Petition in /websocket not a POST");
+      res.write('Petition in /websocket not a POST');
       return res.end();
     }
   } else {
     res.writeHead(200, {'Content-Type': 'text/plain', 'access-control-allow-origin': '*'});
-    res.write("Malformed petition");
+    res.write('Malformed petition');
     return res.end();
   }
 }
@@ -63,7 +63,7 @@ function websocket(idTest, text, callback) {
       connectionTable[idTest] = connection;
       console.log('WebSocket client connected');
       connectionTable[idTest].on('error', function(error) {
-        console.log("Connection Error: " + error.toString());
+        console.log('Connection Error: ' + error.toString());
       });
       connectionTable[idTest].on('close', function() {
         console.log('push-notification Connection Closed');

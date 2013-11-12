@@ -211,7 +211,7 @@ NS_UA_UDP.prototype = {
       };
 
       //Fire the request, and forget
-      protocolHandler.get(options,  function(res) {
+      protocolHandler.get(options, function(res) {
         Log.notify(Log.messages.NOTIFY_TO_WAKEUP, {
           uaid: message.uaid,
           wakeupip: message.dt.wakeup_hostport.ip,

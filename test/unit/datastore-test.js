@@ -15,7 +15,7 @@ dataStore.start();
 
 var queries = {
   getNode: function(callback) {
-    var collection = "nodes";
+    var collection = 'nodes';
     var fun = function(self, collection) {
       console.log(collection);
     };

@@ -6,12 +6,12 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var cr = require("../../src/common/Cryptography.js"),
+var cr = require('../../src/common/Cryptography.js'),
     assert = require('assert'),
     vows = require('vows');
 
 vows.describe('Cryptography tests').addBatch({
-  "SHA256": function() {
+  'SHA256': function() {
     var sha = cr.hashSHA256('hello');
     assert.isString(sha);
     assert.equal(sha,
@@ -29,7 +29,7 @@ vows.describe('Cryptography tests').addBatch({
     assert.equal(sha,
       '7b2d8450de89e2ef0c7b85c8d1dd1e499008a142cef20ac76c098782cf2920d6');
   },
-  "SHA512": function() {
+  'SHA512': function() {
     var sha = cr.hashSHA512('hello');
     assert.isString(sha);
     assert.equal(sha,
@@ -49,8 +49,8 @@ vows.describe('Cryptography tests').addBatch({
       '3f82ebfbb729a9535afeb0adb61d6037c325eb6be7ed3581d0722659faff692da9d10' +
       '53e677ea478fe453ad6f24df3b6ddeafb261d5502a2b7dbdc23d7fb1082');
   },
-  "generateHMAC": function() {
-    var sha = cr.generateHMAC('hello','12345678901234567890');
+  'generateHMAC': function() {
+    var sha = cr.generateHMAC('hello', '12345678901234567890');
     assert.isString(sha);
     assert.equal(sha,
       '3f4d5f49782448009fc54047201e0a9fbd755c13');

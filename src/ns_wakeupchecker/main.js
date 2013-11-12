@@ -93,7 +93,7 @@ NS_WakeUp_Checker.prototype = {
     }
     Log.debug('NS_WakeUpChecker:checkNodes -> Checking nodes');
     var self = this;
-    this.recoverNetworks(function(wakeUpNodes){
+    this.recoverNetworks(function(wakeUpNodes) {
       wakeUpNodes.forEach(function(node) {
         Log.debug('Checking Local Proxy server', node);
         self.checkServer(node.wakeup, function(err,res) {

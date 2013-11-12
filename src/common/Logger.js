@@ -62,7 +62,7 @@ Logger.prototype = {
         process.exit(1);
         return;
       }
-    } catch(e) {
+    } catch (e) {
       console.error(logparams.BASE_PATH + ' does not exist');
       process.exit(1);
       return;
@@ -93,9 +93,9 @@ Logger.prototype = {
       if (object) {
         Object.keys(object).forEach(function(k) {
           if (typeof(object[k]) === 'object') {
-            message = message.replace('::'+k, JSON.stringify(object[k]));
+            message = message.replace('::' + k, JSON.stringify(object[k]));
           } else {
-            message = message.replace('::'+k, object[k]);
+            message = message.replace('::' + k, object[k]);
           }
         });
         object = null;
@@ -110,7 +110,7 @@ Logger.prototype = {
     }
     var logmsg = '[' + this.appname + ' # ' + level + '] - {' + (new Date()) + ' (' + Date.now() + ')} - ';
     if (workerID !== 0) {
-      logmsg = logmsg + '(wrk' + workerID +') - ';
+      logmsg = logmsg + '(wrk' + workerID + ') - ';
     } else {
       logmsg = logmsg + '(mst) - ';
     }

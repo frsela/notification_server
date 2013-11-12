@@ -16,7 +16,7 @@ exports.registerUA = function registerUA(connection, token, callback) {
 };
 
 exports.sendSimplePushV1Notification = function(url, versionText, callback) {
-  var https = require("https");
+  var https = require('https');
   var urllib = require('url');
   var urlData = urllib.parse(url);
   var options = {
@@ -45,11 +45,11 @@ exports.sendSimplePushV1Notification = function(url, versionText, callback) {
   // write data to request body
   req.write(versionText);
   req.end();
-}
+};
 
 var fs = require('fs');
 exports.sendNotification = function sendNotification(url, text, callback) {
-  var https = require("https");
+  var https = require('https');
   var urllib = require('url');
   var urlData = urllib.parse(url);
   var options = {
@@ -86,7 +86,7 @@ exports.allDifferents = function allDifferents(l) {
   }
   var obj = {};
   for (var i = 0, item; item = l[i]; i++) {
-    if (obj[item]) {
+   if (obj[item]) {
       return false;
     }
     obj[item] = 1;

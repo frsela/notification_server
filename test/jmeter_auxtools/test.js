@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 var wsClient = require('websocket').client;
 
@@ -12,7 +12,7 @@ conn.on('connect', function(connection) {
   connection.sendUTF('{ "messageType": "hello", "uaid": null}');
 
   connection.on('error', function(error) {
-    console.log("Connection Error: " + error.toString());
+    console.log('Connection Error: ' + error.toString());
   });
   connection.on('close', function() {
     console.log('Connection ' + identifier + ' closed');

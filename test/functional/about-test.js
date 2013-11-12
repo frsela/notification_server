@@ -33,5 +33,5 @@ vows.describe('About tests').addBatch({
       assert.isNull(error);
       assert.equal(response.statusCode, 200);
     }
-  },
+  }
 }).export(module);

@@ -17,7 +17,7 @@
  * will be debug information showing what failed.
  */
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 (function checkArgvLength() {
   if (process.argv.length < 3) {
@@ -43,7 +43,7 @@ var debug = require('./common').debug,
       PushTest.connection = connection;
       debug('WebSocket client connected');
       connection.on('error', function(error) {
-        console.log("Connection Error: " + error.toString());
+        console.log('Connection Error: ' + error.toString());
       });
       connection.on('close', function() {
         debug('push-notification Connection Closed');
@@ -54,17 +54,17 @@ var debug = require('./common').debug,
           var msg = JSON.parse(message.utf8Data);
           debug(msg);
           if (!Array.isArray(msg)) msg = [msg];
-          if (msg[0].status == 200 && msg[0].messageType == "hello") {
+          if (msg[0].status == 200 && msg[0].messageType == 'hello') {
             PushTest.registerUAOK = true;
-            debug("UA registered");
+            debug('UA registered');
           } else if (msg[0].status == 200 && msg[0].messageType == 'register') {
             PushTest.registerWAOK = true;
             PushTest.url = msg[0].pushEndpoint;
-            debug("WA registered with url -- " + msg[0].pushEndpoint);
+            debug('WA registered with url -- ' + msg[0].pushEndpoint);
           } else if (msg[0].messageType == 'notification') {
             PushTest.gotNotification = true;
             PushTest.connection.sendUTF('{"messageType": "ack", "updates":' + JSON.stringify(msg[0].updates) + '}');
-            debug("Notification received!! Sending ACK");
+            debug('Notification received!! Sending ACK');
           }
         }
       });
@@ -100,7 +100,7 @@ var debug = require('./common').debug,
   },
 
   sendNotification: function sendNotification() {
-    var https = require("https");
+    var https = require('https');
     var urlData = PushTest._parseURL();
     if (!urlData) return;
     var options = {
@@ -131,7 +131,7 @@ var debug = require('./common').debug,
   },
 
   init: function init() {
-    PushTest.port =  require('../../src/config.js').NS_UA_WS.interface.port;
+    PushTest.port = require('../../src/config.js').NS_UA_WS.interface.port;
     PushTest.host = '127.0.0.1';
     PushTest.NOTIFICATION = 'version=1';
 
@@ -144,14 +144,14 @@ var debug = require('./common').debug,
     if (PushTest.registerUAOK &&
         PushTest.registerWAOK &&
         PushTest.gotNotification) {
-      debug("Everything went better than expected! http://i2.kym-cdn.com/entries/icons/original/000/001/253/everything_went_better_than_expected.jpg");
+      debug('Everything went better than expected! http://i2.kym-cdn.com/entries/icons/original/000/001/253/everything_went_better_than_expected.jpg');
       PushTest.connection.close();
       process.exit(0);
     } else {
-      console.log("KO, check flags:");
-      console.log("registerUAOK is " + PushTest.registerUAOK);
-      console.log("registerWAOK is " + PushTest.registerWAOK);
-      console.log("gotNotification is " + PushTest.gotNotification);
+      console.log('KO, check flags:');
+      console.log('registerUAOK is ' + PushTest.registerUAOK);
+      console.log('registerWAOK is ' + PushTest.registerWAOK);
+      console.log('gotNotification is ' + PushTest.gotNotification);
       PushTest.connection.close();
       process.exit(1);
     }

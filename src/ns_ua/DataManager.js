@@ -37,11 +37,11 @@ function DataManager() {
     process.nextTick(function() {
       DataStore.start();
     });
-  },
+  };,
 
   this.stop = function() {
     DataStore.stop();
-  },
+  };,
 
   /**
    * Register a new node. As a parameter, we receive the connector object
@@ -70,7 +70,7 @@ function DataManager() {
         callback
       );
     });
-  },
+  };,
 
   /**
    * Unregisters (or inform about disconnection) a Node from the DDBB and memory

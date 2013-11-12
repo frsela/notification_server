@@ -1,11 +1,11 @@
 /* jshint node: true */
-"use strict";
+'use strict';
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 
 var ARGS = [];
-for (var i = 2; i<process.argv.length; i++) {
+for (var i = 2; i < process.argv.length; i++) {
   ARGS.push(process.argv[i]);
 }
 console.log(ARGS.length);
@@ -21,14 +21,14 @@ var url = require('url');
 
 var debug = function(message) {
   console.log((new Date().toLocaleString()) + ' - ' + message);
-}
+};
 
 var sendRegister = function(connection) {
   connection.sendUTF('{"channelID":"1234","messageType":"register"}');
 };
 
 var sendNotification = function(where) {
-  var version = Math.floor(Math.random()*100000);
+  var version = Math.floor(Math.random() * 100000);
   var u = url.parse(where);
   var options = {
     hostname: u.hostname,
@@ -41,7 +41,7 @@ var sendNotification = function(where) {
     debug('notification sent to ' + where + ' version=' + version + ' - ' + res.statusCode);
   });
 
-  req.on('error', function(){});
+  req.on('error', function() {});
 
   req.write('version=' + version);
   req.end();
@@ -49,7 +49,7 @@ var sendNotification = function(where) {
 
 var wsClient = require('websocket').client;
 
-var WSADRESS = 'wss://'+ARGS[0]+':'+ARGS[1]+'/',
+var WSADRESS = 'wss://' + ARGS[0] + ':' + ARGS[1] + '/',
     PROTOCOL = 'push-notification';
 
 var id = 0;
@@ -96,7 +96,7 @@ var newConnection = function newConnection() {
     setTimeout(function() {
       clearInterval(sendNotInterval);
       connection.close();
-    }, ARGS[3])
+    }, ARGS[3]);
   });
   conn.connect(WSADRESS, PROTOCOL);
 };

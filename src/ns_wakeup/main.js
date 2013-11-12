@@ -120,7 +120,7 @@ NS_WakeUp.prototype = {
               return '';
             }
           });
-        } catch(e) {
+        } catch (e) {
           text = 'No version.info file';
         }
         response.setHeader('Content-Type', 'text/html');

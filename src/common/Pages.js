@@ -17,7 +17,7 @@ Pages.prototype = {
   setTemplate: function(tmpl) {
     try {
       this.template = fs.readFileSync(tmpl).toString();
-    } catch(e) {
+    } catch (e) {
       this.template = '<html><head><title>Error</title></head><body><h1>Error</h1></body></html>';
     }
   },

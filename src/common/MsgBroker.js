@@ -30,7 +30,7 @@ function MsgBroker() {
 
 util.inherits(MsgBroker, events.EventEmitter);
 
-MsgBroker.prototype.start = function () {
+MsgBroker.prototype.start = function() {
   Log.info('msgBroker::queue.init --> Connecting to the queue servers');
 
   //Create connection to the broker
@@ -43,9 +43,9 @@ MsgBroker.prototype.start = function () {
   }
 };
 
-MsgBroker.prototype.stop = function () {
+MsgBroker.prototype.stop = function() {
   this.controlledClose = true;
-  this.queues.forEach(function (element) {
+  this.queues.forEach(function(element) {
     if (element.queue) {
       element.end();
     }
@@ -53,7 +53,7 @@ MsgBroker.prototype.stop = function () {
   Log.info('msgbroker::close --> Closing connection to msgBroker');
 };
 
-MsgBroker.prototype.subscribe = function (queueName, args, broker, callback) {
+MsgBroker.prototype.subscribe = function(queueName, args, broker, callback) {
   if (this.controlledClose) {
     return;
   }
@@ -62,14 +62,14 @@ MsgBroker.prototype.subscribe = function (queueName, args, broker, callback) {
   } else {
     broker = this.queues;
   }
-  broker = broker.filter(function (conn) {
+  broker = broker.filter(function(conn) {
     return conn.state === QUEUE_CONNECTED;
   });
 
-  broker.forEach(function (br) {
+  broker.forEach(function(br) {
     var exchange = br.exchange(queueName + '-fanout', { type: 'fanout'});
 
-    var q = br.queue(queueName, args, function () {
+    var q = br.queue(queueName, args, function() {
       Log.info('msgbroker::subscribe --> Subscribed to queue: ' + queueName);
       q.bind(exchange, '*');
       q.subscribe(callback);
@@ -80,12 +80,12 @@ MsgBroker.prototype.subscribe = function (queueName, args, broker, callback) {
 /**
  * Insert a new message into the queue
  */
-MsgBroker.prototype.push = function (queueName, obj) {
+MsgBroker.prototype.push = function(queueName, obj) {
   Log.debug('msgbroker::push --> Sending to the queue ' + queueName + ' the package:', obj);
   //Send to one of the connections that is connected to a queue
   //TODO: send randomly , not to the first open connection (which is the easiest 'algorithm')
   var sent = false;
-  this.queues.forEach(function (connection) {
+  this.queues.forEach(function(connection) {
     var exchange = connection.exchange(queueName + '-fanout', {type: 'fanout'});
     if (connection && !sent) {
       exchange.publish(queueName, obj, { contentType: 'application/json', deliveryMode: 1 });
@@ -94,7 +94,7 @@ MsgBroker.prototype.push = function (queueName, obj) {
   });
 };
 
-MsgBroker.prototype.createConnection = function (queuesConf) {
+MsgBroker.prototype.createConnection = function(queuesConf) {
   var conn = new amqp.createConnection({
       port: queuesConf.port,
       host: queuesConf.host,
@@ -113,14 +113,14 @@ MsgBroker.prototype.createConnection = function (queuesConf) {
   var self = this;
 
   // Events for this queue
-  conn.on('ready', (function () {
+  conn.on('ready', (function() {
     conn.state = QUEUE_CONNECTED;
     Log.info('msgbroker::queue.ready --> Connected to one Message Broker, id=' + conn.id);
     self.queues.push(conn);
     self.emit('ready', conn);
   }));
 
-  conn.on('close', (function () {
+  conn.on('close', (function() {
     Log.info('msgbroker::queue.close --> Close on one Message Broker, id=' + conn.id);
     if (conn.state === QUEUE_CONNECTED) {
       conn.state = QUEUE_DISCONNECTED;
@@ -141,7 +141,7 @@ MsgBroker.prototype.createConnection = function (queuesConf) {
     self.emit('queuedisconnected');
   }));
 
-  conn.on('error', (function (error) {
+  conn.on('error', (function(error) {
     Log.error(Log.messages.ERROR_MBCONNECTIONERROR, {
       'error': error.type
     });
@@ -149,20 +149,20 @@ MsgBroker.prototype.createConnection = function (queuesConf) {
     self.emit('queuedisconnected');
   }));
 
-  conn.on('heartbeat', (function () {
+  conn.on('heartbeat', (function() {
     Log.debug('msgbroker::heartbeat');
   }));
 };
 
-MsgBroker.prototype.isDisconnected = function (element) {
+MsgBroker.prototype.isDisconnected = function(element) {
   return element.state !== QUEUE_CONNECTED;
 };
 
-MsgBroker.prototype.pending = function (element) {
+MsgBroker.prototype.pending = function(element) {
   return element.state === QUEUE_CREATED;
 };
 
-var _msg =  new MsgBroker();
+var _msg = new MsgBroker();
 function getMsgBroker() {
   return _msg;
 }

@@ -5,7 +5,7 @@
  * Fernando Rodríguez Sela <frsela@tid.es>
  * Guillermo Lopez Leal <gll@tid.es>
  */
-  
+
 'use strict';
 
 
@@ -539,7 +539,7 @@ NS_UA_WS.prototype.onWSRequest = function(request) {
                 if (!channelsUpdate) {
                   return;
                 }
-                Log.debug('CHANNELS: ',channelsUpdate);
+                Log.debug('CHANNELS: ', channelsUpdate);
                 connection.res({
                   errorcode: errorcodes.NO_ERROR,
                   extradata: {
@@ -795,7 +795,7 @@ NS_UA_WS.prototype.onWSRequest = function(request) {
       }
       connection.sendUTF(JSON.stringify(res));
     };
-  } catch(e) {
+  } catch (e) {
     Log.debug('WS::onWSRequest --> Connection from origin ' + request.origin + 'rejected. Bad WebSocket sub-protocol.');
     request.reject();
   }
