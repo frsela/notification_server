@@ -96,7 +96,7 @@ NS_WakeUp_Checker.prototype = {
     this.recoverNetworks(function(wakeUpNodes) {
       wakeUpNodes.forEach(function(node) {
         Log.debug('Checking Local Proxy server', node);
-        self.checkServer(node.wakeup, function(err,res) {
+        self.checkServer(node.wakeup, function(err, res) {
           if (err || res.statusCode !== 200) {
             Log.info(Log.messages.NOTIFY_WAKEUPSERVER_KO, {
               country: node.country,

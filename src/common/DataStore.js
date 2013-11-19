@@ -548,7 +548,7 @@ var DataStore = function() {
 
 /**
  * Save a new message
- * @return New message as stored on DB.
+ * return New message as stored on DB.
  */
   this.newVersion = function(nodeId, appToken, channelID, version) {
     var msg = {};

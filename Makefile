@@ -23,6 +23,6 @@ cloc:
 
 linter:
 	@echo "Passing linter for coding style guidelines adoption"
-	@$(LINTER) --disable 210,217,220,225 -r src/
-	@$(LINTER) --disable 210,217,220,225 -r test/
+	@$(LINTER) --disable 110,210,217,220,225 -r src/
+	@$(LINTER) --disable 110,210,217,220,225 -r test/
 

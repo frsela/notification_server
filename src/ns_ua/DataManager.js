@@ -106,51 +106,50 @@ function DataManager() {
             'uaid': uaid
           });
         }
-      }
-    );
+      });
     if (connector) {
       Connectors.unregisterUAID(uaid);
     }
-  },
+  };,
 
 
   /**
    * Gets a node connector (from memory)
    */
-  this.getNodeConnector = function (uaid) {
+  this.getNodeConnector = function(uaid) {
     Log.debug('dataManager::getNodeConnector --> getting node from memory: ' + uaid);
     return Connectors.getConnectorForUAID(uaid);
-  },
+  };,
 
   /**
    * Gets a node info from DB
    */
   this.getNodeData = function(uaid, callback) {
     DataStore.getNodeData(uaid, callback);
-  },
+  };,
 
   /**
    * Register a new application
    */
-  this.registerApplication = function (appToken, channelID, uaid, cert, callback) {
+  this.registerApplication = function(appToken, channelID, uaid, cert, callback) {
     // Store in persistent storage
     DataStore.registerApplication(appToken, channelID, uaid, cert, callback);
-  },
+  };,
 
  /**
    * Unregister an old application
    */
- this.unregisterApplication = function (appToken, uaid, callback) {
+ this.unregisterApplication = function(appToken, uaid, callback) {
     // Remove from persistent storage
     DataStore.unregisterApplication(appToken, uaid, callback);
-  },
+  };,
 
   /**
    * Recover a list of WA associated to a UA
    */
-  this.getApplicationsForUA = function (uaid, callback) {
+  this.getApplicationsForUA = function(uaid, callback) {
     DataStore.getApplicationsForUA(uaid, callback);
-  },
+  };,
 
   /**
    * ACKs an ack'ed message
